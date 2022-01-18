@@ -23,7 +23,7 @@ router.post("/users/login", async (req, res) => {
     );
 
     const token = await user.generateAuthToken();
-    res.send({ user, token });
+    res.send({ user: user, token });
   } catch (error) {
     res.status(400).send();
   }
@@ -53,21 +53,6 @@ router.post("/users/logoutAll", auth, async (req, res) => {
 
 router.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
-});
-
-router.get("/user/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const user = await User.findById(id);
-
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.status(200).send(user);
-  } catch (error) {
-    res.status(500).send(error);
-  }
 });
 
 router.patch("/user/:id", async (req, res) => {
@@ -101,16 +86,10 @@ router.patch("/user/:id", async (req, res) => {
   }
 });
 
-router.delete("/user/:id", async (req, res) => {
-  const { id } = req.params;
-
+router.delete("/user/me", auth, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(id);
-
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.status(200).send();
+    await req.user.remove();
+    res.send(user);
   } catch (error) {
     res.status(500).send(error);
   }
