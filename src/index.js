@@ -2,6 +2,7 @@ const express = require("express");
 require("./db/mongoose");
 const userRouter = require("./routers/user");
 const eventRouter = require("./routers/event");
+
 const app = express();
 const PORT = process.env.PORT;
 
