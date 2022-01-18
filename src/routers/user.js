@@ -55,7 +55,7 @@ router.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
 });
 
-router.patch("/user/:id", async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["firstName", "lastName", "DOB", "gender", "password"];
   const isValidOperation = updates.every((updates) =>
@@ -66,21 +66,11 @@ router.patch("/user/:id", async (req, res) => {
   }
 
   try {
-    // const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-    //   new: true,
-    //   runValidators: true,
-    // });
+    updates.forEach((update) => (req.user[update] = req.body[update]));
 
-    const user = await User.findById(req.params.id);
+    await req.user.save();
 
-    updates.forEach((update) => (user[update] = req.body[update]));
-
-    if (!user) {
-      return res.status(404).send("No user found");
-    }
-    await user.save();
-
-    res.send(user);
+    res.send(req.user);
   } catch (error) {
     res.status(400).send(error);
   }
