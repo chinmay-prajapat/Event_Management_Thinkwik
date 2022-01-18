@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const Event = require("../models/event");
+const auth = require("../middlewares/auth");
 
-router.post("/events", async (req, res) => {
-  const event = new Event(req.body);
-
+router.post("/events", auth, async (req, res) => {
+  const event = new Event({
+    ...req.body,
+    owner: req.user._id,
+  });
   try {
     await event.save();
 
@@ -14,9 +17,9 @@ router.post("/events", async (req, res) => {
   }
 });
 
-router.get("/events", async (req, res) => {
+router.get("/events", auth, async (req, res) => {
   try {
-    const events = await Event.find({});
+    const events = await Event.find({ owner: req.user._id });
 
     res.status(200).json(events);
   } catch (error) {
@@ -24,12 +27,10 @@ router.get("/events", async (req, res) => {
   }
 });
 
-router.get("/event/:id", async (req, res) => {
-  const { id } = req.params;
-
+router.get("/event/:id", auth, async (req, res) => {
+  const _id = req.params.id;
   try {
-    const event = await Event.findById(id);
-
+    const event = await Event.findOne({ _id, owner: req.user._id });
     if (!event) {
       return res.status(404).send();
     }
@@ -39,11 +40,14 @@ router.get("/event/:id", async (req, res) => {
   }
 });
 
-router.delete("/event/:id", async (req, res) => {
+router.delete("/event/:id", auth, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const event = await Event.findByIdAndDelete(id);
+    const event = await Event.findOneAndDelete({
+      _id: id,
+      owner: req.user._id,
+    });
 
     if (!event) {
       return res.status(404).send();

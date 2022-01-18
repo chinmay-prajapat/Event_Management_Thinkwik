@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const Event = require("./event");
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -60,6 +61,12 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+userSchema.virtual("events", {
+  ref: "Event",
+  localField: "_id",
+  foreignField: "owner",
+});
+
 userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
@@ -96,6 +103,14 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
+// Delete user events when user is removed
+userSchema.pre("remove", async function (next) {
+  const user = this;
+  await Event.deleteMany({ owner: user._id });
+  next();
+});
+
 const User = mongoose.model("Users", userSchema);
 
 module.exports = User;

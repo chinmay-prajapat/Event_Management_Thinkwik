@@ -29,13 +29,3 @@ app.use(eventRouter);
 app.listen(PORT, () => {
   console.log(`Server running at ${PORT}`);
 });
-
-const jwt = require("jsonwebtoken");
-const myFunction = async () => {
-  const token = jwt.sign({ _id: "abc" }, "thisismynewcourse", {
-    expiresIn: "5 days",
-  });
-  console.log(token);
-  jwt.verify(token, "thisismynewcourse");
-};
-myFunction();
