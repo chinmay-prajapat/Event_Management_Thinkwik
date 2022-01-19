@@ -16,6 +16,8 @@ router.post("/users", async (req, res) => {
   }
 });
 
+// File upload mechanism
+
 const upload = multer({
   dest: "avatars",
   limits: {
