@@ -6,6 +6,7 @@
 .pnp.js
 /images
 /config
+/avatars
 # testing
 /coverage
 
