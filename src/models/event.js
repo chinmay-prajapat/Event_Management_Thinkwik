@@ -30,9 +30,13 @@ const Event = mongoose.model("Events", {
     trim: true,
     required: true,
   },
-  participants: {
-    type: Array,
-  },
+  participants: [
+    {
+      participant: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    },
+  ],
   maximumParticipants: {
     type: Number,
     required: true,

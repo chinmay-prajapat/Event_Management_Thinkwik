@@ -17,6 +17,47 @@ router.post("/events", auth, async (req, res) => {
   }
 });
 
+router.post("/events/:id", auth, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).send("No event found!");
+    }
+
+    const id = req.user._id;
+    event.participants.addToSet(id);
+
+    await event.save();
+
+    res.status(201).send(event);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.post("/leftEvents/:id", auth, async (req, res) => {
+  try {
+    const events = await Event.findById(req.params.id);
+
+    if (!events) {
+      return res.status(404).send("No event found!");
+    }
+
+    const id = req.user._id;
+
+    events.participants = events.participants.filter(
+      (i) => i._id.toString() !== id.toString()
+    );
+
+    await events.save();
+
+    res.status(201).send(events);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 router.get("/events", auth, async (req, res) => {
   try {
     const events = await Event.find({ owner: req.user._id });
