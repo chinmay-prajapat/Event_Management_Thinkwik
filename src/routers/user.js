@@ -1,9 +1,14 @@
 const express = require("express");
 const router = new express.Router();
 const User = require("../models/user");
-const auth = require("../middlewares/auth");
-const multer = require("multer");
-const sharp = require("sharp");
+
+const auth = require("../middlewares/auth"); //Authentcation Module
+
+const multer = require("multer"); //To upload file
+
+const sharp = require("sharp"); //To resize profile
+
+// To register a user
 
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
@@ -16,6 +21,8 @@ router.post("/users", async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+//To login
 
 router.post("/users/login", async (req, res) => {
   try {
@@ -31,6 +38,8 @@ router.post("/users/login", async (req, res) => {
   }
 });
 
+//Logout
+
 router.post("/users/logout", auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
@@ -43,6 +52,8 @@ router.post("/users/logout", auth, async (req, res) => {
   }
 });
 
+// To logout from all the devices
+
 router.post("/users/logoutAll", auth, async (req, res) => {
   try {
     req.user.tokens = [];
@@ -53,9 +64,13 @@ router.post("/users/logoutAll", auth, async (req, res) => {
   }
 });
 
+//To get my profile
+
 router.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
 });
+
+//To edit/update my profile
 
 router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
@@ -92,6 +107,8 @@ const upload = multer({
   },
 });
 
+//Upload profile
+
 router.post(
   "/users/me/avatar",
   auth,
@@ -110,6 +127,8 @@ router.post(
   }
 );
 
+//Get the user Profile
+
 router.get("/users/:id/avatar", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -123,11 +142,15 @@ router.get("/users/:id/avatar", async (req, res) => {
   }
 });
 
+//Delete the Profle
+
 router.delete("/users/me/avatar", auth, async (req, res) => {
   req.user.avatar = undefined;
   await req.user.save();
   res.send();
 });
+
+//Delete user
 
 router.delete("/users/me", auth, async (req, res) => {
   try {

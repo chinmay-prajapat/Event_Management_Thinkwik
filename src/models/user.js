@@ -1,8 +1,7 @@
-const bcryptjs = require("bcryptjs");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs"); //Hashing mechanism
 const mongoose = require("mongoose");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
+const validator = require("validator"); //To validate the user data
+const jwt = require("jsonwebtoken"); //Json token genration module
 const Event = require("./event");
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -70,6 +69,8 @@ userSchema.virtual("events", {
   foreignField: "owner",
 });
 
+//Returning user profile to client
+
 userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
@@ -79,6 +80,8 @@ userSchema.methods.toJSON = function () {
   return userObject;
 };
 
+//To generate tokens
+
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, process.env.MYTOKEN);
@@ -86,6 +89,8 @@ userSchema.methods.generateAuthToken = async function () {
   await user.save();
   return token;
 };
+
+//To login
 
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
@@ -99,6 +104,8 @@ userSchema.statics.findByCredentials = async (email, password) => {
   return user;
 };
 
+//Hash the password before saving
+
 userSchema.pre("save", async function (next) {
   const user = this;
   if (user.isModified("password")) {
@@ -107,7 +114,8 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Delete user events when user is removed
+// Delete user events when user is removed cascading deletion
+
 userSchema.pre("remove", async function (next) {
   const user = this;
   await Event.deleteMany({ owner: user._id });

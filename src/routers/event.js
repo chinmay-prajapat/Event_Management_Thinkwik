@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Event = require("../models/event");
-const auth = require("../middlewares/auth");
+const auth = require("../middlewares/auth"); //Authentication Module
+
+//To post an event
 
 router.post("/events", auth, async (req, res) => {
   const event = new Event({
@@ -16,6 +18,8 @@ router.post("/events", auth, async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+//To Join an event
 
 router.post("/events/:id", auth, async (req, res) => {
   try {
@@ -35,6 +39,8 @@ router.post("/events/:id", auth, async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+//To leave an event
 
 router.delete("/leaveEvents/:id", auth, async (req, res) => {
   try {
@@ -58,15 +64,19 @@ router.delete("/leaveEvents/:id", auth, async (req, res) => {
   }
 });
 
+//Get all the Events
+
 router.get("/events", auth, async (req, res) => {
   try {
-    const events = await Event.find({ owner: req.user._id });
+    const events = await Event.find({});
 
     res.status(200).json(events);
   } catch (error) {
     res.status(500).send(error);
   }
 });
+
+//To get specific events
 
 router.get("/event/:id", auth, async (req, res) => {
   const _id = req.params.id;
@@ -80,6 +90,8 @@ router.get("/event/:id", auth, async (req, res) => {
     res.status(500).send(error);
   }
 });
+
+//To delete an event
 
 router.delete("/event/:id", auth, async (req, res) => {
   const { id } = req.params;
