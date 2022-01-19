@@ -59,6 +59,9 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  avatar: {
+    type: Buffer,
+  },
 });
 
 userSchema.virtual("events", {
