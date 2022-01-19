@@ -36,7 +36,7 @@ router.post("/events/:id", auth, async (req, res) => {
   }
 });
 
-router.post("/leftEvents/:id", auth, async (req, res) => {
+router.delete("/leaveEvents/:id", auth, async (req, res) => {
   try {
     const events = await Event.findById(req.params.id);
 
