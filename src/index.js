@@ -4,7 +4,7 @@ const userRouter = require("./routers/user");
 const eventRouter = require("./routers/event");
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 /*  -------- To stop all the transcation ---------*/
 
@@ -28,22 +28,4 @@ app.use(eventRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running at ${PORT}`);
-});
-
-const multer = require("multer");
-const upload = multer({
-  dest: "images",
-  limits: {
-    fileSize: 1000000,
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(doc|docx)$/)) {
-      return cb(new Error("Please upload a word"));
-    }
-    cb(undefined, true);
-  },
-});
-
-app.post("/upload", upload.single("upload"), (req, res) => {
-  res.send();
 });
